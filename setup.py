@@ -10,6 +10,6 @@ setup(
   download_url = 'https://github.com/lionfish0/download_thingspeak/archive/1.01.tar.gz',
   keywords = ['thingspeak'],
   classifiers = [],
-  install_requires=['json','requests','datetime','pickle','os'],
+  install_requires=['requests'],
 )
 
