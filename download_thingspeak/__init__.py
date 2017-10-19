@@ -6,7 +6,7 @@ import os
 
 def download(apiurl,cache='use',verbose=False,apikey=None):
     """
-    download(apiurl,cache='use'):
+    download(apiurl,cache='use',verbose=False,apikey=None):
 
     Loads thingspeak data from apiurl
     Set cache to:
@@ -31,8 +31,10 @@ def download(apiurl,cache='use',verbose=False,apikey=None):
             assert False, "Can't only use cache as there is no cache"
         nextid = 1
         alldata = []
-        endtime = None    
-
+        endtime = None  
+    if (cache=='only'): #we should stop now, and use the cached data we've got
+        return alldata
+        
     result = None
     if verbose: print("Using %d records from cache" % len(alldata))
     while result != '-1':
