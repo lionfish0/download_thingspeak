@@ -44,7 +44,7 @@ def download(apiurl,cache='use',verbose=False,apikey=None):
         #until now, and repeat until we run out of new items).
         url = apiurl+'/feeds/entry/%d.json' % (nextid)
         if apikey is not None: url += '?api_key=%s' % apikey
-        result = json.loads(requests.post(url).content)
+        result = json.loads(requests.post(url).content.decode('utf-8'))
         starttime = endtime
         if result==-1:
             if verbose: print("Warning: Unable to retrieve data (does channel exist? is it public?)")
@@ -59,7 +59,7 @@ def download(apiurl,cache='use',verbose=False,apikey=None):
             end = datetime.strftime(endtime-timedelta(seconds=1),'%Y-%m-%dT%H:%M:%SZ')
             url = apiurl+'/feeds.json?start=%s&end=%s' % (start,end)
             if apikey is not None: url += '&api_key=%s' % apikey            
-            data = json.loads(requests.post(url).content)
+            data = json.loads(requests.post(url).content.decode('utf-8'))
             if (data!=-1):
                 alldata.extend(data['feeds'])
                 if verbose: print("    Adding %d records..." % len(data['feeds']))
