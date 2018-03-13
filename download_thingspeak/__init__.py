@@ -35,7 +35,7 @@ def download(apiurl,cache='use',verbose=False,apikey=None):
 
     result = None
     if verbose: print("Using %d records from cache" % len(alldata))
-    while result != '-1':
+    while result != -1:
         #thingspeak doesn't let you download ranges of ids, instead you have to
         #download ranges of dates. We can only download 8000 at a time, so we
         #need to get the date of the next one we need (then we ask for that datetime
@@ -45,8 +45,7 @@ def download(apiurl,cache='use',verbose=False,apikey=None):
         result = json.loads(requests.post(url).content)
         starttime = endtime
         if result==-1:
-            if verbose: print("Warning: Unable to retrieve data (does channel exist? is it public?)")
-        if result == '-1':
+            #if verbose: print("Warning: Unable to retrieve data (does channel exist? is it public?)")
             endtime = datetime.now()
         else:
             endtime = str_to_date(result['created_at'])
