@@ -4,7 +4,7 @@ import pickle
 import os
 
 
-def download(apiurl,cache='use',verbose=False,apikey=None):
+def download(apiurl,cache='use',verbose=False,apikey=None,cacheonly=None):
     """
     download(apiurl,cache='use',verbose=False,apikey=None):
 
@@ -13,6 +13,9 @@ def download(apiurl,cache='use',verbose=False,apikey=None):
         'use' - to use it
         'refresh' - to not use it
         'only' - to only use it
+    cacheonly = if set, only cache this many previous training points,
+       will only report this many when output. This is useful to avoid
+       caches becoming arbitrarily large with historic data.
     """
     filename = 'channel%s.p'%apiurl.split('/')[-1]
     cachefile = os.path.isfile(filename)
@@ -44,6 +47,7 @@ def download(apiurl,cache='use',verbose=False,apikey=None):
         #until now, and repeat until we run out of new items).
         url = apiurl+'/feeds/entry/%d.json' % (nextid)
         if apikey is not None: url += '?api_key=%s' % apikey
+        print("Loading from %s" % url)
         result = json.loads(requests.post(url).content.decode('utf-8'))
         starttime = endtime
         if result==-1:
@@ -57,7 +61,8 @@ def download(apiurl,cache='use',verbose=False,apikey=None):
             start = datetime.strftime(starttime,'%Y-%m-%dT%H:%M:%SZ')
             end = datetime.strftime(endtime-timedelta(seconds=1),'%Y-%m-%dT%H:%M:%SZ')
             url = apiurl+'/feeds.json?start=%s&end=%s' % (start,end)
-            if apikey is not None: url += '&api_key=%s' % apikey            
+            if apikey is not None: url += '&api_key=%s' % apikey
+            print("Loading from %s" % url)                        
             data = json.loads(requests.post(url).content.decode('utf-8'))
             if (data!=-1):
                 alldata.extend(data['feeds'])
@@ -67,7 +72,11 @@ def download(apiurl,cache='use',verbose=False,apikey=None):
             
         nextid += 7999 #thought download was 8000 fields, but it's 8000 records. 8000/len(result)
     if verbose: print("New cache has %d records, saving." % len(alldata))
-    pickle.dump( alldata, open( filename, "wb" ) )
+    
+    if cacheonly is not None:
+        pickle.dump( alldata[-cacheonly:], open( filename, "wb" ) )
+    else:
+        pickle.dump( alldata, open( filename, "wb" ) )
     return alldata
     
 def str_to_date(st):
